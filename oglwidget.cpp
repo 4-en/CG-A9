@@ -20,6 +20,7 @@ void OGLWidget::runSim()
     constexpr auto waitTime = std::chrono::microseconds(micros);
     auto lastTime = std::chrono::high_resolution_clock::now();
     unsigned long long frame = 0;
+    double time = 0.0;
 
 
     running = true;
@@ -28,22 +29,18 @@ void OGLWidget::runSim()
         lastTime = std::chrono::high_resolution_clock::now();
         // parama+=0.1;
         dt = dtime * paramb;
-        world->tick(lastTime.time_since_epoch().count());
-        // apply gravity
+        time = time + dt;
+        //world->tick(lastTime.time_since_epoch().count());
+
+        // world handles all logic (movement, collision, gravity...)
+        world->tick(time);
 
 
 
 
         update();
 
-        // print update every second
-        /*
-        if (frame % fps == 0)
-        {
-            auto secondsFromFrames = frame / fps;
-            std::cout << "\rFPS: " << fps << " Frame: " << frame << " Seconds: " << secondsFromFrames <<"             " << std::flush;
-        }
-        */
+        // sleep until next tick
         std::this_thread::sleep_until(lastTime + waitTime);
         frame++;
     }

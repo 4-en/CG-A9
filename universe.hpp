@@ -9,7 +9,7 @@ class Universe : public World {
 
 public:
     Universe();
-    void tick(unsigned long long time);
+    void tick(double time);
 
 };
 

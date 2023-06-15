@@ -3,12 +3,12 @@
 #include "oglwidget.h"
 #include <iostream>
 
-void World::tick(unsigned long long time) {
+void World::tick(double time) {
 
     SimObject::tick(time);
 
-    for(Sphere& sphere : spheres) {
-        sphere.tick(time);
+    for(Sphere* sphere : spheres) {
+        sphere->tick(time);
     }
 
     // gravity and other calculations here
@@ -25,6 +25,12 @@ void glVertexVecVec3(const std::vector<Vec3> &v)
     for (const auto &vec : v)
     {
         glVertex3f(vec.x, vec.y, vec.z);
+    }
+}
+
+World::~World() {
+    for(Sphere* s : this->spheres) {
+        delete s;
     }
 }
 

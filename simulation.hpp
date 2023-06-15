@@ -214,15 +214,16 @@ public:
 class World : public SimObject {
 
 protected:
-    std::vector<Sphere> spheres;
+    std::vector<Sphere*> spheres;
 
 
 public:
     World() : SimObject(){}
+    virtual ~World();
 
-    std::vector<Sphere>& getSpheres() { return this->spheres; }
-
-    virtual void tick(unsigned long long time);
+    std::vector<Sphere*>& getSpheres() { return this->spheres; }
+    void addSphere(Sphere * sphere) { this->spheres.push_back(sphere); }
+    virtual void tick(double time);
 
 };
 

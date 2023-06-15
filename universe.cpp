@@ -7,7 +7,7 @@ Universe::Universe() : World() {
     addChild(s);
 }
 
-void Universe::tick(unsigned long long time) {
+void Universe::tick(double time) {
     World::tick(time);
 }
 
