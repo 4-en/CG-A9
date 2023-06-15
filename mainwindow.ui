@@ -93,7 +93,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>Light</string>
+        <string>Zoom</string>
        </property>
       </widget>
       <widget class="QLabel" name="labelB">

@@ -172,6 +172,7 @@ protected:
     int resolution;
     // Normal of the floor, used for rolling
     Vec3 currentFloorNormal = Vec3(0,1,0);
+    double customMass = 0;
 
 public:
     Sphere() : SimObject(), radius(1), resolution(10) {}
@@ -186,6 +187,7 @@ public:
     void move(Vec3 v);
     void moveTo(Vec3 v);
     double getMass();
+    void setMass(double mass) { customMass = mass; }
     void bounce(Sphere& other);
 
 };
@@ -224,6 +226,7 @@ public:
     std::vector<Sphere*>& getSpheres() { return this->spheres; }
     void addSphere(Sphere * sphere) { this->spheres.push_back(sphere); }
     virtual void tick(double time);
+    virtual void draw();
 
 };
 

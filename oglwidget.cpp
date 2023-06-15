@@ -21,6 +21,7 @@ void OGLWidget::runSim()
     auto lastTime = std::chrono::high_resolution_clock::now();
     unsigned long long frame = 0;
     double time = 0.0;
+    double timeScale = 60.0*60.0 * 24.0; // 1 day per second
 
 
     running = true;
@@ -28,7 +29,7 @@ void OGLWidget::runSim()
     {
         lastTime = std::chrono::high_resolution_clock::now();
         // parama+=0.1;
-        dt = dtime * paramb;
+        dt = dtime * paramb * timeScale;
         time = time + dt;
         //world->tick(lastTime.time_since_epoch().count());
 
@@ -85,11 +86,35 @@ void OGLWidget::initializeGL()
     glClearColor(0, 0, 0, 1);
     glEnable(GL_DEPTH_TEST);
     glShadeModel(GL_SMOOTH);
-    // glEnable(GL_LIGHT0);
     glEnable(GL_LIGHTING);
-    float light_diffuse_color[] = {0.1, 0.1, 0.1, 0};
-    glLightfv(GL_LIGHT1, GL_DIFFUSE, light_diffuse_color);
-    glEnable(GL_LIGHT1);
+    glEnable(GL_LIGHT0);
+    //float light_diffuse_color[] = {0.1, 0.1, 0.1, 0};
+    //glLightfv(GL_LIGHT1, GL_DIFFUSE, light_diffuse_color);
+    //glEnable(GL_LIGHT1);
+
+
+    // point light
+    GLfloat lightPosition[] = {0.0,0.0,0.0, 1.0};  // Set the light position (x, y, z)
+    glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+
+    glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);  // Set lighting to one side only
+
+    GLfloat lightAmbient[] = {0.2, 0.2, 0.2, 1.0};   // Set ambient color (RGBA)
+    GLfloat lightDiffuse[] = {1.0, 1.0, 1.0, 1.0};   // Set diffuse color (RGBA)
+    GLfloat lightSpecular[] = {1.0, 1.0, 1.0, 1.0};  // Set specular color (RGBA)
+
+    glLightfv(GL_LIGHT0, GL_AMBIENT, lightAmbient);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular);
+
+    GLfloat constantAttenuation = 1.0;   // Set constant attenuation factor
+    GLfloat linearAttenuation = 0.09;    // Set linear attenuation factor
+    GLfloat quadraticAttenuation = 0.032; // Set quadratic attenuation factor
+
+    glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, constantAttenuation);
+    glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, linearAttenuation);
+    glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, quadraticAttenuation);
+
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
     glEnable(GL_COLOR_MATERIAL);
 
@@ -106,7 +131,7 @@ void OGLWidget::setParamA(int newa)
 
 void OGLWidget::setParamB(int newb)
 {
-    paramb = newb / 10.0;
+    paramb = newb * 1.0;
     update();
 }
 
@@ -141,17 +166,17 @@ void OGLWidget::paintGL()
     qViewMatrix.rotate(-45, 1, 0, 0);
     glRotatef(-135, 0, 1, 0);
     qViewMatrix.rotate(-135, 0, 1, 0);
-    glScaled(0.1, 0.1, 0.1);
+    glScaled(0.1*parama, 0.1*parama, 0.1*parama);
     qViewMatrix.scale(0.1, 0.1, 0.1);
 
     float lightRot = parama * 36;
     glPushMatrix();
-    glRotatef(lightRot, 0, 0, 1);
+    //glRotatef(lightRot, 0, 0, 1);
 
     // light at 0/0/10
-    float light_position[] = {10, 5, -10, 0};
-    glLightfv(GL_LIGHT1, GL_POSITION, light_position);
-    glEnable(GL_LIGHT1);
+    //float light_position[] = {0.0, 0.0001, 0.0, 0};
+    //glLightfv(GL_LIGHT1, GL_POSITION, light_position);
+    //glEnable(GL_LIGHT1);
     glPopMatrix();
 
 

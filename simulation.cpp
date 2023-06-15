@@ -34,6 +34,14 @@ World::~World() {
     }
 }
 
+void World::draw() {
+    SimObject::draw();
+
+    for(Sphere* s:spheres) {
+        s->draw();
+    }
+}
+
 // collision of sphere with wall
 bool Wall::collide(Sphere &sphere)
 {
@@ -680,7 +688,7 @@ void Sphere::draw()
             glColor3f(color.x, color.y, color.z);
             break;
         case 1:
-            glColor3f(1, 0.7, 1);
+            //glColor3f(1, 0.7, 1);
             break;
         }
 
@@ -750,6 +758,7 @@ void Sphere::moveTo(Vec3 v)
 
 double Sphere::getMass()
 {
+    if(customMass!=0) return customMass;
     return 4.0 / 3.0 * PI * pow(radius, 3) * density;
 }
 
