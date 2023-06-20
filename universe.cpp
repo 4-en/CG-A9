@@ -2,15 +2,21 @@
 #include "universe.hpp"
 #include <random>
 #include <cmath>
+#include <iostream>
 
 Universe::Universe() : World() {
     Sphere* s = new Sphere();
 
     //addChild(s);
     this->createSystem();
+    lastTime = -1;
 }
 
 void Universe::tick(double time) {
+    if(lastTime == -1) {
+        lastTime = time;
+        return;
+    }
     World::tick(time);
     this->applyGravity(time);
     this->applyVelocity(time);
@@ -93,7 +99,7 @@ Sphere* PlanetData::createSphere(double scale) {
 
     if(radius < minRadius) radius = minRadius;
     if(radius > maxRadius) radius = maxRadius;
-
+    std::cout << sizeof(double) << std::endl;
     double mass = this->mass * scale;
     double distance = this->distance * scale;
     double velocity = this->velocity * scale;
