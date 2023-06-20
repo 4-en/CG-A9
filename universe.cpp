@@ -62,29 +62,48 @@ void Universe::createSystem() {
 // calculates gravity between planets and changes velocity
 void Universe::applyGravity(double time) {
     // time in seconds (default time scale is 1 day per second)
-    double gravityscale = 200000000;
+    double gravityscale = 7.5e-34;
     constexpr double G = 6.67408e-11;
-   for(Sphere* s : this->spheres) {
+
+    double timeDiff = time - lastTime;
+
+
+    std::vector<Sphere*> usedSpheres;
+    for(Sphere* s : this->spheres) {
 
         // calculate gravity
         for(Sphere* s2 : this->spheres){
             if(s == s2) continue;
+            if(std::find(usedSpheres.begin(), usedSpheres.end(), s2) != usedSpheres.end()) continue;
 
             //distance of center of mass
-            float distx = s->getPosition().x-s2->getPosition().x;
-            float disty = s->getPosition().y-s2->getPosition().y;
-            float distz = s->getPosition().z-s2->getPosition().z;
-            float distance = sqrt(distx*distx+disty*disty+distz*distz);
+            auto r = s->getPosition() - s2->getPosition();
 
-            Vec3 connectionvector = Vec3(distx,disty,distz);
+            // distance is in millions of km
+            //r = r * 1000000;
 
+            auto r3 = Vec3(r.x*r.x*r.x, r.y*r.y*r.y, r.z*r.z*r.z);
 
-            Vec3 f =( G * ((s->getMass()*s2->getMass())/abs(distance*distance*distance))*connectionvector).normalized();
+            double distance = r3.length();
 
-            s->setVelocity(s->getVelocity()-f/s->getMass()*gravityscale);
+            // calculate force
+            Vec3 F = gravityscale * G * s->getMass() * s2->getMass() / distance * r;
+
+            //std::cout << F.x << " " << F.y << " " << F.z << std::endl;
+
+            auto acc1 = F / s->getMass();
+            auto acc2 = F / s2->getMass();
+            //std::cout << acc1.x << " " << acc1.y << " " << acc1.z << std::endl;
+
+            s->setVelocity(s->getVelocity() - acc1 * timeDiff);
+            //std::cout << "VEL:" << s->getVelocity().x << " " << s->getVelocity().y << " " << s->getVelocity().z << std::endl;
+            s2->setVelocity(s2->getVelocity() + acc2 * timeDiff);
 
 
         }
+
+        usedSpheres.push_back(s);
+
     }
 
 }
@@ -94,6 +113,8 @@ void Universe::applyVelocity(double time) {
 
     for(Sphere* s : this->spheres) {
         s->move(s->getVelocity() * (time - lastTime));
+
+        //std::cout << s->getPosition().x << " " << s->getPosition().y << " " << s->getPosition().z << std::endl;
     }
 
 
@@ -111,7 +132,7 @@ Sphere* PlanetData::createSphere(double scale) {
     if(radius < minRadius) radius = minRadius;
     if(radius > maxRadius) radius = maxRadius;
 
-    double mass = this->mass * scale;
+    double mass = this->mass;
     double distance = this->distance * scale;
     double velocity = this->velocity * scale;
 
