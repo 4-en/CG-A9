@@ -55,7 +55,7 @@ OGLWidget::OGLWidget(QWidget *parent)
     : QOpenGLWidget(parent)
 {
     parama = 1;
-    paramb = 1;
+    paramb = 20;
     paramc = 1;
     lightDirection = 0;
     world = new Universe();

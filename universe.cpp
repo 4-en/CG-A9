@@ -51,7 +51,6 @@ void Universe::createSystem() {
     system.push_back(PlanetData(25362, 8.68e25, 2870.6e6, 6.81, Vec3(0.42,0.75,0.89)));
     system.push_back(PlanetData(24622, 1.02e26, 4498.4e6, 5.43, Vec3(0,0,0.5)));
     system.push_back(PlanetData(1188, 1.31e22, 5906.4e6, 4.67, Vec3(0.66,0.36,0.25)));
-
     for(PlanetData p : system) {
         Sphere* s = p.createSphere(scale);
         this->addSphere(s);
@@ -63,17 +62,29 @@ void Universe::createSystem() {
 // calculates gravity between planets and changes velocity
 void Universe::applyGravity(double time) {
     // time in seconds (default time scale is 1 day per second)
-
+    double gravityscale = 200000000;
     constexpr double G = 6.67408e-11;
-    std::vector<Sphere*> calculated;
-    for(Sphere* s : this->spheres) {
-        
-        // check if already calculated
-        if(std::find(calculated.begin(), calculated.end(), s) != calculated.end()) continue;
+   for(Sphere* s : this->spheres) {
 
         // calculate gravity
+        for(Sphere* s2 : this->spheres){
+            if(s == s2) continue;
 
-        calculated.push_back(s);
+            //distance of center of mass
+            float distx = s->getPosition().x-s2->getPosition().x;
+            float disty = s->getPosition().y-s2->getPosition().y;
+            float distz = s->getPosition().z-s2->getPosition().z;
+            float distance = sqrt(distx*distx+disty*disty+distz*distz);
+
+            Vec3 connectionvector = Vec3(distx,disty,distz);
+
+
+            Vec3 f =( G * ((s->getMass()*s2->getMass())/abs(distance*distance*distance))*connectionvector).normalized();
+
+            s->setVelocity(s->getVelocity()-f/s->getMass()*gravityscale);
+
+
+        }
     }
 
 }
@@ -99,7 +110,7 @@ Sphere* PlanetData::createSphere(double scale) {
 
     if(radius < minRadius) radius = minRadius;
     if(radius > maxRadius) radius = maxRadius;
-    std::cout << sizeof(double) << std::endl;
+
     double mass = this->mass * scale;
     double distance = this->distance * scale;
     double velocity = this->velocity * scale;
